@@ -163,7 +163,7 @@ class Graph
    ~Graph () {delete [] adj;}
 
     private:    
-    adj_list* adj;           //An array (adj) of class linked_lists.
+    adj_list* adj;           //An array (adj) of pointers to linked lists, which store graph's data
     int size;
 };
 
@@ -253,7 +253,11 @@ void dijkstra (Graph &g, int src, int n)
     //Calculating average shortest path
     double avg = 0;
     for (int i = 0; i < n; i++)
-        avg += (dist [i] - avg) / (i+1);    //A superior calculation to avoid overflow
+    {
+        //To check if the node has atleast one edge (connected)
+        if (dist [i] < INF_DIST)
+            avg += (dist [i] - avg) / (i+1);    //A superior calculation to prevent overflow
+    }
     cout << "Average Shortest Path is: " << avg << "\n\nPrintiong out shortest path of each vertex:\n\n";
     for (int i = 0; i < n; i++)
     {
