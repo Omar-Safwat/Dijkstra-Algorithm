@@ -55,16 +55,16 @@ void heapSort(vector<NODE> &pq)
 {
     int size = pq.size();
         //Builds a heap (rearrange).
-        for (int root = size / 2 - 1; root >= 0; root--)    
-            heapify(pq, size, root);
+    for (int root = size / 2 - 1; root >= 0; root--)    
+        heapify(pq, size, root);
 
-        for (int i = size - 1; i > 0; i--)
-         {   
-            //Moves the smallest vertex (At the root, pq[0]) to the end of the array (Bottom right corner of heap).
-            swap(pq[0], pq[i]);
-            //Moves the next smallest vertex to the root, to repeat the above step.
-            heapify (pq, i, 0);
-         }
+    for (int i = size - 1; i > 0; i--)
+    {   
+        //Moves the smallest vertex (At the root, pq[0]) to the end of the array (Bottom right corner of heap).
+        swap(pq[0], pq[i]);
+        //Moves the next smallest vertex to the root, to repeat the above step.
+        heapify (pq, i, 0);
+    }
 }
 
 //Priority Queue using STL vector
@@ -214,7 +214,7 @@ vector <NODE> Graph::get_adjNodes (int top)
     return adj_nodes;                       //return the vector to Dijkstra function
 }
 
-void update_adjNodes (Graph &g, PriorityQueue &PQ, int dist [])
+void update_adjNodes (Graph &g, PriorityQueue &PQ, int dist [], int parent [])
 {
     int top = PQ.top ();                                //top is the vertex with top priority (least weight)
     PQ.pop_queue ();
@@ -228,6 +228,8 @@ void update_adjNodes (Graph &g, PriorityQueue &PQ, int dist [])
         if ((w + dist [top]) < dist [v])
         {   
             dist [v] = w + dist [top];
+            parent [v] = top;
+            //cout << parent [v] << endl;
             PQ.chgPriority (v, w + dist [top]);
         }
     }
@@ -238,26 +240,40 @@ void update_adjNodes (Graph &g, PriorityQueue &PQ, int dist [])
 void dijkstra (Graph &g, int src, int n)   
 {
     int dist [n];                           //To record min dist from source node
+    int parent [n];                         //Parent array saves the shortest path information
     PriorityQueue PQ (n);
     for (int i = 0; i < n; i++) 
         dist [i] = INF_DIST;    
 
     dist [src] = 0;
+    parent [src] = 0;
     while (!PQ.is_empty ())
-        update_adjNodes (g, PQ, dist); 
+        update_adjNodes (g, PQ, dist, parent); 
     
     //Calculating average shortest path
     double avg = 0;
     for (int i = 0; i < n; i++)
         avg += (dist [i] - avg) / (i+1);    //A superior calculation to avoid overflow
-    cout << "Average Shortest Path is: " << avg << endl;
+    cout << "Average Shortest Path is: " << avg << "\n\nPrintiong out shortest path of each vertex:\n\n";
+    for (int i = 0; i < n; i++)
+    {
+        cout << i;
+        int v = parent [i];
+        while (v > 0)
+        {
+            cout << "<-" << v;
+            v = parent [v];
+        }
+        cout << "<-0\n\n";
+    }
 }
 
 int main ()
 {
-        Graph g(200);
-        dijkstra (g, 0, 200);
-    
+        //Graph is generated randomly and shortest path for each vertex is printed out
+        Graph g(50);
+        dijkstra (g, 0, 50);
+        return 0;
 }
 
 
